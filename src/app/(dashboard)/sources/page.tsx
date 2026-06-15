@@ -1,13 +1,22 @@
+import { getSources } from "@/features/sources/queries"
+import { AddSourceForm } from "@/features/sources/components/add-source-form"
+import { SourceList } from "@/features/sources/components/source-list"
+
 export default function SourcesPage() {
+  const sources = getSources()
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Sources</h1>
-        <p className="text-muted-foreground mt-1">Manage RSS feeds and YouTube channels.</p>
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Sources</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Manage RSS feeds and YouTube channels.
+          </p>
+        </div>
+        <AddSourceForm />
       </div>
-      <div className="rounded-xl border bg-card p-6 sm:p-8 text-center text-muted-foreground">
-        <p>No sources yet. Add your first one.</p>
-      </div>
+      <SourceList sources={sources} />
     </div>
   )
 }

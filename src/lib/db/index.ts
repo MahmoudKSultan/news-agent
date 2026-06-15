@@ -28,21 +28,29 @@ export function now(): string {
   return new Date().toISOString()
 }
 
-// Helper: run a query that returns rows
+function withPrefix(params?: Record<string, unknown>): Record<string, unknown> {
+  if (!params) return {}
+  const out: Record<string, unknown> = {}
+  for (const [k, v] of Object.entries(params)) {
+    out[`$${k}`] = v
+  }
+  return out
+}
+
 export function queryAll<T>(sql: string, params?: Record<string, unknown>): T[] {
   const stmt = getDb().prepare(sql)
-  return (stmt.all(params) ?? []) as T[]
+  const result = stmt.all(withPrefix(params))
+  return (result ?? []) as T[]
 }
 
-// Helper: run a query that returns one row
 export function queryOne<T>(sql: string, params?: Record<string, unknown>): T | null {
   const stmt = getDb().prepare(sql)
-  return (stmt.get(params) ?? null) as T | null
+  const result = stmt.get(withPrefix(params))
+  return (result ?? null) as T | null
 }
 
-// Helper: run a write statement
 export function execute(sql: string, params?: Record<string, unknown>): { changes: number; lastInsertRowid: number | bigint } {
   const stmt = getDb().prepare(sql)
-  const result = stmt.run(params)
+  const result = stmt.run(withPrefix(params))
   return { changes: result.changes, lastInsertRowid: result.lastInsertRowid }
 }
