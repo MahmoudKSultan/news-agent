@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { Icon } from "@iconify/react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -20,30 +20,35 @@ export function DiscoverSources() {
   const [topic, setTopic] = useState("")
   const [results, setResults] = useState<DiscoveredSource[]>([])
   const [loading, setLoading] = useState(false)
-  const [adding, setAdding] = useState<Set<string>>(new Set())
+  const [addingUrls, setAddingUrls] = useState<string[]>([])
 
-  async function handleSearch() {
+  const handleSearch = useCallback(async () => {
     if (!topic.trim()) return
     setLoading(true)
     setResults([])
     const found = await discoverSources(topic)
     setResults(found)
     setLoading(false)
-  }
+  }, [topic])
 
   async function handleAdd(source: DiscoveredSource) {
-    setAdding((prev) => new Set(prev).add(source.url))
+    setAddingUrls((prev) => [...prev, source.url])
     await addSource({ name: source.title.slice(0, 100), url: source.url, type: source.type })
-    setAdding((prev) => {
-      const next = new Set(prev)
-      next.delete(source.url)
-      return next
-    })
+    setAddingUrls((prev) => prev.filter((u) => u !== source.url))
+  }
+
+  function handleOpenChange(open: boolean) {
+    setOpen(open)
+    if (!open) {
+      setTopic("")
+      setResults([])
+      setLoading(false)
+    }
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={<Button variant="outline" className="gap-2" />}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogTrigger render={<Button variant="outline" className="gap-2 cursor-pointer" />}>
         <Icon icon="mdi:compass" className="size-4" />
         Discover
       </DialogTrigger>
@@ -62,7 +67,7 @@ export function DiscoverSources() {
                 onChange={(e) => setTopic(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               />
-              <Button onClick={handleSearch} disabled={loading || !topic.trim()}>
+              <Button type="button" onClick={handleSearch} disabled={loading || !topic.trim()}>
                 {loading ? (
                   <Icon icon="mdi:loading" className="size-4 animate-spin" />
                 ) : (
@@ -87,7 +92,7 @@ export function DiscoverSources() {
           )}
 
           {results.length > 0 && (
-            <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
               {results.map((source) => (
                 <div
                   key={source.url}
@@ -113,10 +118,11 @@ export function DiscoverSources() {
                     size="sm"
                     variant="outline"
                     className="shrink-0"
-                    disabled={adding.has(source.url)}
+                    disabled={addingUrls.includes(source.url)}
                     onClick={() => handleAdd(source)}
+                    type="button"
                   >
-                    {adding.has(source.url) ? (
+                    {addingUrls.includes(source.url) ? (
                       <Icon icon="mdi:check" className="size-4" />
                     ) : (
                       "Add"
