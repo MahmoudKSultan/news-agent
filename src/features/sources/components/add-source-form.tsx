@@ -20,6 +20,7 @@ import {
 const sourceTypes = [
   { value: "rss", label: "RSS Feed", icon: "mdi:rss" },
   { value: "youtube", label: "YouTube", icon: "mdi:youtube" },
+  { value: "web", label: "Website", icon: "mdi:web" },
 ] as const
 
 export function AddSourceForm() {

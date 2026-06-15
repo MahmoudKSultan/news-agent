@@ -111,7 +111,11 @@ export async function fetchAllSources(
 
     if (source.type === "rss") {
       articles = await fetchRssFeed(source)
-    } else if (source.type === "youtube" || source.type === "web") {
+      // fallback: if RSS fails, try scraping the page directly
+      if (articles.length === 0) {
+        articles = await fetchWebSource(source)
+      }
+    } else {
       articles = await fetchWebSource(source)
     }
 
