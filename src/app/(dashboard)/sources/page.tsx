@@ -1,6 +1,7 @@
 import { getSources } from "@/features/sources/queries"
 import { AddSourceForm } from "@/features/sources/components/add-source-form"
 import { SourceList } from "@/features/sources/components/source-list"
+import { DiscoverSources } from "@/features/sources/components/discover-sources"
 
 export default function SourcesPage() {
   const sources = getSources()
@@ -14,7 +15,10 @@ export default function SourcesPage() {
             Manage RSS feeds and YouTube channels.
           </p>
         </div>
-        <AddSourceForm />
+        <div className="flex gap-2">
+          <DiscoverSources />
+          <AddSourceForm />
+        </div>
       </div>
       <SourceList sources={sources} />
     </div>
