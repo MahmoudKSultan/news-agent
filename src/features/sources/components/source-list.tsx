@@ -6,10 +6,53 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { Source } from "@/types/article"
 
+function getDomain(url: string): string {
+  try {
+    return new URL(url).hostname.replace("www.", "")
+  } catch {
+    return url
+  }
+}
+
+function faviconUrl(url: string): string {
+  return `https://www.google.com/s2/favicons?domain=${getDomain(url)}&sz=32`
+}
+
 const typeConfig = {
   rss: { icon: "mdi:rss", label: "RSS", class: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400" },
   youtube: { icon: "mdi:youtube", label: "YouTube", class: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" },
   web: { icon: "mdi:web", label: "Web", class: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" },
+}
+
+function SourceIcon({ source }: { source: Source }) {
+  if (source.type === "youtube") {
+    return (
+      <div className="size-10 rounded-lg flex items-center justify-center bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+        <Icon icon="mdi:youtube" className="size-5" />
+      </div>
+    )
+  }
+
+  const domain = getDomain(source.url)
+
+  return (
+    <div className="size-10 rounded-lg flex items-center justify-center overflow-hidden bg-muted shrink-0">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={faviconUrl(source.url)}
+        alt={`${domain} icon`}
+        className="size-5"
+        onError={(e) => {
+          const el = e.currentTarget
+          el.style.display = "none"
+          el.insertAdjacentHTML(
+            "afterend",
+            `<span class="text-xs font-medium text-muted-foreground opacity-60">${domain.charAt(0).toUpperCase()}</span>`
+          )
+        }}
+      />
+    </div>
+  )
 }
 
 export function SourceList({ sources }: { sources: Source[] }) {
@@ -32,15 +75,13 @@ export function SourceList({ sources }: { sources: Source[] }) {
             key={source.id}
             className="rounded-xl border bg-card p-4 flex items-center gap-4 transition-shadow hover:shadow-sm"
           >
-            <div className={`size-10 rounded-lg flex items-center justify-center ${cfg.class}`}>
-              <Icon icon={cfg.icon} className="size-5" />
-            </div>
+            <SourceIcon source={source} />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <span className="font-medium truncate">{source.name}</span>
                 <Badge variant="outline" className="text-xs font-normal">{cfg.label}</Badge>
               </div>
-              <p className="text-xs text-muted-foreground truncate mt-0.5">{source.url}</p>
+              <p className="text-xs text-muted-foreground truncate mt-0.5">{getDomain(source.url)}</p>
             </div>
             <div className="flex items-center gap-1 shrink-0">
               <Button
