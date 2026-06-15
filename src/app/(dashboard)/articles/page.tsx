@@ -41,17 +41,19 @@ export default function ArticlesPage() {
             <Link
               key={article.id}
               href={`/articles/${article.id}`}
-              className="group relative rounded-xl border bg-card hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 overflow-hidden"
+              className="group relative rounded-xl border border-border/80 bg-card shadow-sm hover:shadow-md transition-all duration-200 hover:-translate-y-0.5 overflow-hidden"
             >
               <div className="p-5">
+                <span className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary/40 to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+
                 <div className="flex items-center gap-2 mb-3">
-                  <div className="size-6 rounded-md bg-muted flex items-center justify-center overflow-hidden shrink-0">
+                  <div className="size-6 rounded-md bg-muted flex items-center justify-center overflow-hidden shrink-0 ring-1 ring-border/50">
                     <SourceFavicon url={article.url} className="size-4" />
                   </div>
-                  <span className="text-xs font-medium text-muted-foreground truncate">
+                  <span className="text-xs font-semibold text-foreground/70 truncate">
                     {article.source_name || "Unknown"}
                   </span>
-                  <span className="text-xs text-muted-foreground/50">·</span>
+                  <span className="text-xs text-muted-foreground/30">·</span>
                   <span className="text-xs text-muted-foreground whitespace-nowrap">
                     {formatDate(article.published_at || article.fetched_at)}
                   </span>
@@ -61,11 +63,11 @@ export default function ArticlesPage() {
                   {article.title}
                 </h3>
 
-                <p className="text-xs text-muted-foreground/70 mt-2 line-clamp-2 leading-relaxed">
+                <p className="text-xs text-foreground/60 mt-2 line-clamp-2 leading-relaxed">
                   {article.raw_text?.slice(0, 200) ?? ""}...
                 </p>
 
-                <div className="flex items-center gap-3 mt-4 pt-3 border-t text-xs text-muted-foreground/50">
+                <div className="flex items-center gap-3 mt-4 pt-3 border-t border-border/60 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1">
                     <Icon icon="mdi:clock-outline" className="size-3" />
                     {formatDate(article.fetched_at)}
