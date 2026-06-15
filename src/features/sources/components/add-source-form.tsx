@@ -2,6 +2,7 @@
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useState } from "react"
 import { Icon } from "@iconify/react"
 import { addSourceSchema, type AddSourceInput } from "../schemas"
 import { addSource } from "../actions"
@@ -22,6 +23,7 @@ const sourceTypes = [
 ] as const
 
 export function AddSourceForm() {
+  const [open, setOpen] = useState(false)
   const {
     register,
     handleSubmit,
@@ -44,10 +46,11 @@ export function AddSourceForm() {
       return
     }
     reset()
+    setOpen(false)
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger render={<Button className="gap-2" />}>
         <Icon icon="mdi:plus" className="size-4" />
         Add Source
