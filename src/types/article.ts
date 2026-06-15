@@ -32,6 +32,10 @@ export interface Article {
   fetched_at: string
 }
 
+export interface ArticleWithSource extends Article {
+  source_name: string
+}
+
 export interface ArticleInteraction {
   id: string
   article_id: string
